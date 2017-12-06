@@ -3,22 +3,20 @@ package com.example.acaron0608.acassignment1;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,19 +27,20 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-import android.widget.Toast;
-
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+    private User user;
+    private AppDatabase database;
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -95,6 +94,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
+
     }
 
     private void populateAutoComplete() {
@@ -188,9 +190,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            //Database testing
+            database = AppDatabase.getDatabase(getApplicationContext());
+            database.userDao().addUser(new User(1,email, password));
+            user = database.userDao().getAllUser().get(0);
+            Toast.makeText(this, String.valueOf(user.userName), Toast.LENGTH_SHORT).show();
             Toast t = Toast.makeText(this, "Login Success!!", Toast.LENGTH_SHORT);
             Intent profile = new Intent(this, MainActivity.class);
             t.show();
+
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
             startActivity(profile);
